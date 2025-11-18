@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 
-
-
 const superheroSchema = new mongoose.Schema({
     nombreSuperHeroe: {type: String, required: true},
     nombreReal: {type: String, required: true},
