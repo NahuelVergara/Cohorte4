@@ -26,8 +26,9 @@ export async function obtenerSuperHeroePorIdController(req, res) {
 export async function obtenerTodosLosSuperHeroesController(req, res) {
     try {
         const superheroes = await obtenerTodosLosSuperHeroes();
-        const superHeroesFormateados = renderizarListaSuperheroes(superheroes);
-        res.status(200).json(superHeroesFormateados);
+        // const superHeroesFormateados = renderizarListaSuperheroes(superheroes);
+        // res.status(200).json(superHeroesFormateados);
+        res.status(200).render('dashboard', { superheroes });
     } catch (error) {
         res.status(500).send({mensaje: 'Error al obtener los superhéroes', error: error.message});
     }
@@ -63,7 +64,38 @@ export async function obtenerSuperHeroesMayoresDe30Controller(req, res) {
 export async function agregarSuperHeroeController(req, res) {
     try {
         const datos = req.body;
-        const creado = await agregarSuperHeroe(datos);
+
+        const normalizarLista = (v) => {
+            if (Array.isArray(v)) return v;
+            if (typeof v === 'string' && v.length > 0) return v.split(',').map(s => s.trim()).filter(Boolean);
+            return [];
+        };
+
+        const valores = {
+            nombreSuperHeroe: datos.nombreSuperHeroe?.trim(),
+            nombreReal: datos.nombreReal?.trim(),
+            edad: Number(datos.edad),
+            planetaOrigen: datos.planetaOrigen?.trim(),
+            debilidad: datos.debilidad?.trim(),
+            poderes: Array.isArray(datos.poderes) ? datos.poderes : normalizarLista(datos.poderes),
+            aliados: normalizarLista(datos.aliados),
+            enemigos: normalizarLista(datos.enemigos),
+        };
+
+        const creado = await agregarSuperHeroe({
+            nombreSuperHeroe: valores.nombreSuperHeroe,
+            nombreReal: valores.nombreReal,
+            edad: valores.edad,
+            planetaOrigen: valores.planetaOrigen,
+            debilidad: valores.debilidad,
+            poderes: valores.poderes,
+            aliados: valores.aliados,
+            enemigos: valores.enemigos,
+        });
+
+        if (datos.fromForm) {
+            return res.redirect('/heroes');
+        }
         const respuesta = renderizarSuperheroe(creado);
         res.status(200).json(respuesta);
     } catch (error) {
@@ -71,20 +103,20 @@ export async function agregarSuperHeroeController(req, res) {
     }
 }
 
-export async function actualizarSuperHeroeController(req, res) {
-    try{
-        const {id} = req.params;
-        const datosActualizados = req.body;
-        const actualizado = await actualizarSuperHeroe(id, datosActualizados);
-        if(!actualizado){
-            return res.status(404).send({mensaje: 'Superhéroe no encontrado para actualizar'});
-        }
-        const respuesta = renderizarSuperheroe(actualizado);
-        res.status(200).json(respuesta);
-    }catch(error){
-        res.status(500).send({mensaje: 'Error al actualizar el superhéroe', error: error.message});
-    }
-}
+// export async function actualizarSuperHeroeController(req, res) {
+//     try{
+//         const {id} = req.params;
+//         const datosActualizados = req.body;
+//         const actualizado = await actualizarSuperHeroe(id, datosActualizados);
+//         if(!actualizado){
+//             return res.status(404).send({mensaje: 'Superhéroe no encontrado para actualizar'});
+//         }
+//         const respuesta = renderizarSuperheroe(actualizado);
+//         res.status(200).json(respuesta);
+//     }catch(error){
+//         res.status(500).send({mensaje: 'Error al actualizar el superhéroe', error: error.message});
+//     }
+// }
 
 export async function eliminarSuperHeroeController(req, res) {
     try {
@@ -111,5 +143,40 @@ export async function eliminarSuperHeroePorNombreController(req, res) {
         res.status(200).json(respuesta);
     } catch (error) {
         res.status(500).send({ mensaje: 'Error al eliminar el superhéroe por nombre', error: error.message });
+    }
+}
+
+export async function mostrarFormularioAgregarController(req, res) {
+    res.render('addSuperHero', { errors: [], values: {} });
+}
+
+export async function mostrarFormularioEditarController(req, res) {
+    try {
+        const { id } = req.params;
+        const hero = await obtenerSuperHeroePorId(id);
+        if (!hero) {
+            return res.status(404).send({mensaje: 'Superhéroe no encontrado'});
+        }
+        res.render('editSuperHero', { hero });
+    } catch (error) {
+        res.status(500).send({mensaje: 'Error al mostrar formulario de edición', error: error.message});
+    }
+}
+
+export async function editarSuperHeroeController(req, res) {
+    try {
+        const { id } = req.params;
+        const datos = req.body;
+        const actualizado = await actualizarSuperHeroe(id, datos);
+        if (!actualizado) {
+            return res.status(404).send({mensaje: 'Superhéroe no encontrado para editar'});
+        }
+        if (datos.fromForm) {
+            return res.redirect('/heroes');
+        }
+        const respuesta = renderizarSuperheroe(actualizado);
+        res.status(200).json(respuesta);
+    } catch (error) {
+        res.status(500).send({mensaje: 'Error al editar el superhéroe', error: error.message});
     }
 }

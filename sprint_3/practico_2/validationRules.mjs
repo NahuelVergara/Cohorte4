@@ -22,10 +22,11 @@ export const validateSuperHeroe = () => [
         .isInt({min: 0})
         .withMessage('La edad debe ser un número entero positivo'),
     body('poderes')
-        .trim()
-        .isLength({min: 3, max: 60})
-        .notEmpty()
-        .withMessage('Los poderes son obligatorios')
-        .isArray({min: 1})
-        .withMessage('Los poderes deben ser un arreglo de cadenas de texto'),
+        .customSanitizer((value) => {
+            if (Array.isArray(value)) return value.map((v) => String(v).trim()).filter(Boolean);
+            if (typeof value === 'string') return value.split(',').map((v) => v.trim()).filter(Boolean);
+            return [];
+        })
+        .custom((arr) => Array.isArray(arr) && arr.length > 0)
+        .withMessage('Los poderes deben ser un arreglo de cadenas de texto con al menos un elemento'),
 ];
