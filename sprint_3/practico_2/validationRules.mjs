@@ -1,16 +1,16 @@
-import {body} from 'express-validator';
+import { body } from 'express-validator';
 
 export const validateSuperHeroe = () => [
     body('nombreSuperHeroe')
         .trim()
-        .isLength({min: 3, max: 60})
+        .isLength({ min: 3, max: 60 })
         .notEmpty()
         .withMessage('El nombre del superhéroe es obligatorio')
         .isString()
         .withMessage('El nombre del superhéroe debe ser una cadena de texto'),
     body('nombreReal')
         .trim()
-        .isLength({min: 3, max: 60})
+        .isLength({ min: 3, max: 60 })
         .notEmpty()
         .withMessage('El nombre real es obligatorio')
         .isString()
@@ -19,7 +19,7 @@ export const validateSuperHeroe = () => [
         .trim()
         .notEmpty()
         .withMessage('La edad es obligatoria')
-        .isInt({min: 0})
+        .isInt({ min: 0 })
         .withMessage('La edad debe ser un número entero positivo'),
     body('poderes')
         .customSanitizer((value) => {

@@ -13,5 +13,6 @@ const superheroSchema = new mongoose.Schema({
         creador: String,
 }, {collection: 'Grupo-18'});
 
+superheroSchema.index({ nombreSuperHeroe: 1 });
 const superHero = mongoose.model('SuperHero', superheroSchema);
 export default superHero;

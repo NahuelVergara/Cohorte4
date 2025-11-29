@@ -54,8 +54,9 @@ export async function obtenerSuperHeroesMayoresDe30Controller(req, res) {
         if(superheroes.length === 0){
             return res.status(404).send({mensaje: 'No se encontraron superhéroes mayores de 30 años'});
         }
-        const superHeroesFormateados = renderizarListaSuperheroes(superheroes);
-        res.status(200).json(superHeroesFormateados);
+        // const superHeroesFormateados = renderizarListaSuperheroes(superheroes);
+        // res.status(200).json(superHeroesFormateados);
+        res.status(200).render('mayores30', { superheroes });
     }catch(error){
         res.status(500).send({mensaje: 'Error al obtener superhéroes mayores de 30 años', error: error.message});
     }
@@ -96,9 +97,11 @@ export async function agregarSuperHeroeController(req, res) {
         if (datos.fromForm) {
             return res.redirect('/heroes');
         }
+        console.log('[POST] Superhéroe creado', { id: creado?._id, nombre: creado?.nombreSuperHeroe });
         const respuesta = renderizarSuperheroe(creado);
         res.status(200).json(respuesta);
     } catch (error) {
+        console.error('[POST] Error al agregar el superhéroe', { error: error.message });
         res.status(500).send({mensaje: 'Error al agregar el superhéroe', error: error.message});
     }
 }
@@ -121,13 +124,21 @@ export async function agregarSuperHeroeController(req, res) {
 export async function eliminarSuperHeroeController(req, res) {
     try {
         const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).send({
+                mensaje: 'ID inválido',
+                detalle: 'El parámetro id debe ser un ObjectId de MongoDB'
+            });
+        }
         const heroeEliminado = await eliminarSuperHeroe(id);
         if (!heroeEliminado) {
             return res.status(404).send({ mensaje: 'Superhéroe no encontrado para eliminar' });
         }
+        console.log('[DELETE] Superhéroe eliminado', { id, nombre: heroeEliminado?.nombreSuperHeroe });
         const respuesta = renderizarSuperheroe(heroeEliminado);
         res.status(200).json(respuesta);
     } catch (error) {
+        console.error('[DELETE] Error al eliminar el superhéroe', { error: error.message });
         res.status(500).send({ mensaje: 'Error al eliminar el superhéroe', error: error.message });
     }
 }
@@ -174,9 +185,11 @@ export async function editarSuperHeroeController(req, res) {
         if (datos.fromForm) {
             return res.redirect('/heroes');
         }
+        console.log('[PUT] Superhéroe editado', { id, nombre: actualizado?.nombreSuperHeroe });
         const respuesta = renderizarSuperheroe(actualizado);
         res.status(200).json(respuesta);
     } catch (error) {
+        console.error('[PUT] Error al editar el superhéroe', { error: error.message });
         res.status(500).send({mensaje: 'Error al editar el superhéroe', error: error.message});
     }
 }

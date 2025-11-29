@@ -29,68 +29,83 @@
     });
   </script>
 </head>
-<body class="bg-light">
-  <div class="container py-4">
-    <h1 class="mb-4">Agregar Superhéroe</h1>
 
-    <div id="clientErrorsContainer" class="alert alert-danger <%= (errors && errors.length) ? '' : 'd-none' %>">
-      <ul class="mb-0" id="clientErrors">
-        <% (errors || []).forEach(function(err){ %>
-          <li><%= err %></li>
-        <% }) %>
-      </ul>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+  <%- include('partials/navbar') %>
+
+    <div class="container py-4">
+      <h1 class="mb-4">Agregar Superhéroe</h1>
+
+      <div id="clientErrorsContainer" class="alert alert-danger <%= (errors && errors.length) ? '' : 'd-none' %>">
+        <ul class="mb-0" id="clientErrors">
+          <% (errors || []).forEach(function(err){ %>
+            <li>
+              <%= err %>
+            </li>
+            <% }) %>
+        </ul>
+      </div>
+
+      <form id="formAgregar" action="/heroes/agregar" method="post" class="row g-3">
+        <input type="hidden" name="fromForm" value="1" />
+
+        <div class="col-md-6">
+          <label for="nombreSuperHeroe" class="form-label">Nombre del Superhéroe*</label>
+          <input id="nombreSuperHeroe" name="nombreSuperHeroe" type="text" class="form-control" required minlength="3"
+            value="<%= (values && values.nombreSuperHeroe) || '' %>" />
+        </div>
+
+        <div class="col-md-6">
+          <label for="nombreReal" class="form-label">Nombre Real*</label>
+          <input id="nombreReal" name="nombreReal" type="text" class="form-control" required minlength="3"
+            value="<%= (values && values.nombreReal) || '' %>" />
+        </div>
+
+        <div class="col-md-6">
+          <label for="edad" class="form-label">Edad*</label>
+          <input id="edad" name="edad" type="number" min="0" step="1" class="form-control" required
+            value="<%= (values && values.edad) || '' %>" />
+        </div>
+
+        <div class="col-md-6">
+          <label for="planetaOrigen" class="form-label">Planeta de Origen</label>
+          <input id="planetaOrigen" name="planetaOrigen" type="text" class="form-control"
+            value="<%= (values && values.planetaOrigen) || '' %>" />
+        </div>
+
+        <div class="col-12">
+          <label for="debilidad" class="form-label">Debilidad</label>
+          <input id="debilidad" name="debilidad" type="text" class="form-control"
+            value="<%= (values && values.debilidad) || '' %>" />
+        </div>
+
+        <div class="col-12">
+          <label for="poderes" class="form-label">Poderes* (separados por coma)</label>
+          <input id="poderes" name="poderes" type="text" class="form-control" required
+            value="<%= (values && (values.poderes || []).join(', ')) || '' %>" />
+        </div>
+
+        <div class="col-12">
+          <label for="aliados" class="form-label">Aliados (separados por coma)</label>
+          <input id="aliados" name="aliados" type="text" class="form-control"
+            value="<%= (values && (values.aliados || []).join(', ')) || '' %>" />
+        </div>
+
+        <div class="col-12">
+          <label for="enemigos" class="form-label">Enemigos (separados por coma)</label>
+          <input id="enemigos" name="enemigos" type="text" class="form-control"
+            value="<%= (values && (values.enemigos || []).join(', ')) || '' %>" />
+        </div>
+
+        <div class="col-12 d-flex align-items-center gap-2">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <a href="/heroes" class="btn btn-outline-secondary">Volver al listado</a>
+        </div>
+      </form>
     </div>
 
-    <form id="formAgregar" action="/heroes/agregar" method="post" class="row g-3">
-      <input type="hidden" name="fromForm" value="1" />
-
-      <div class="col-md-6">
-        <label for="nombreSuperHeroe" class="form-label">Nombre del Superhéroe*</label>
-        <input id="nombreSuperHeroe" name="nombreSuperHeroe" type="text" class="form-control" required minlength="3" value="<%= (values && values.nombreSuperHeroe) || '' %>" />
-      </div>
-
-      <div class="col-md-6">
-        <label for="nombreReal" class="form-label">Nombre Real*</label>
-        <input id="nombreReal" name="nombreReal" type="text" class="form-control" required minlength="3" value="<%= (values && values.nombreReal) || '' %>" />
-      </div>
-
-      <div class="col-md-6">
-        <label for="edad" class="form-label">Edad*</label>
-        <input id="edad" name="edad" type="number" min="0" step="1" class="form-control" required value="<%= (values && values.edad) || '' %>" />
-      </div>
-
-      <div class="col-md-6">
-        <label for="planetaOrigen" class="form-label">Planeta de Origen</label>
-        <input id="planetaOrigen" name="planetaOrigen" type="text" class="form-control" value="<%= (values && values.planetaOrigen) || '' %>" />
-      </div>
-
-      <div class="col-12">
-        <label for="debilidad" class="form-label">Debilidad</label>
-        <input id="debilidad" name="debilidad" type="text" class="form-control" value="<%= (values && values.debilidad) || '' %>" />
-      </div>
-
-      <div class="col-12">
-        <label for="poderes" class="form-label">Poderes* (separados por coma)</label>
-        <input id="poderes" name="poderes" type="text" class="form-control" required value="<%= (values && (values.poderes || []).join(', ')) || '' %>" />
-      </div>
-
-      <div class="col-12">
-        <label for="aliados" class="form-label">Aliados (separados por coma)</label>
-        <input id="aliados" name="aliados" type="text" class="form-control" value="<%= (values && (values.aliados || []).join(', ')) || '' %>" />
-      </div>
-
-      <div class="col-12">
-        <label for="enemigos" class="form-label">Enemigos (separados por coma)</label>
-        <input id="enemigos" name="enemigos" type="text" class="form-control" value="<%= (values && (values.enemigos || []).join(', ')) || '' %>" />
-      </div>
-
-      <div class="col-12 d-flex align-items-center gap-2">
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <a href="/heroes" class="btn btn-outline-secondary">Volver al listado</a>
-      </div>
-    </form>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <%- include('partials/footer') %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

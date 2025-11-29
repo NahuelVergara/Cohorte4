@@ -1,8 +1,9 @@
 import express from 'express';
 import path from 'path';
+// import expressLayouts from 'express-ejs-layouts';
 import { fileURLToPath } from 'url';
-import {connectDB} from './config/dbConfig.mjs';
-import {router} from './routes/superHeroeRoutes.mjs';
+import { connectDB } from './config/dbConfig.mjs';
+import { router } from './routes/superHeroeRoutes.mjs';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,13 +20,19 @@ connectDB();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.set('views', path.join(__dirname, 'view'));
+// app.set('views', path.resolve('./view'));
 app.set('view engine', 'ejs');
+
+// Configurar express-ejs-layouts
+// app.use(expressLayouts);
+// app.set('layout', 'layout');
+
 // Rutas
 app.use('/heroes', router);
 
 // Manejo de error rutas no definidas
 app.use((req, res) => {
-    res.status(404).send({mensaje: 'Ruta no encontrada'});
+    res.status(404).send({ mensaje: 'Ruta no encontrada' });
 });
 
 app.listen(PORT, () => {

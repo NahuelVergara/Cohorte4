@@ -23,7 +23,7 @@ class SuperHeroRepository extends IRepository{
     }
 
     async actualizarHeroe(id, data){
-        return await SuperHero.findByIdAndUpdate(id, data, { new: true });
+        return await SuperHero.findByIdAndUpdate(id, data, { new: true, runValidators: true });
     }
 
     async eliminarHeroe(id){
